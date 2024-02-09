@@ -1,5 +1,7 @@
 --[[
     This code was generated with @ReallyHarleyQuinn's GUI -> LuaU magic. You know how we do it.
+    
+    ~ @ReallyHarleyQuinn (Discord & GitHub)
 ]]--
 
 --// Instances //
@@ -64,7 +66,8 @@ title.Font = Enum.Font.GothamBlack
 title.RichText = true
 title.Text = "<font color="#000000">@Really</font><font color="#6f1226">Harley</font><font color="#000000">Quinn</font>"
 title.TextColor3 = Color3.new(0.905882, 0.905882, 0.905882)
-title.TextSize = 45
+title.TextSize = 40
+title.TextWrapped = true
 title.AnchorPoint = Vector2.new(0.5, 0)
 title.BackgroundColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
@@ -82,7 +85,7 @@ continue.TextColor3 = Color3.new(0.435294, 0.0705882, 0.14902)
 continue.TextSize = 14
 continue.AnchorPoint = Vector2.new(0.5, 1)
 continue.BackgroundColor3 = Color3.new(0, 0, 0)
-continue.Position = UDim2.new(0.5, 0, 1, 0)
+continue.Position = UDim2.new(0.5, 0, 0.925000012, 0)
 continue.Size = UDim2.new(1, 0, 0, 50)
 continue.Visible = true
 continue.Name = "Continue"
@@ -99,7 +102,7 @@ mouse.Parent = continue
 local subtitle = Instance.new("TextLabel")
 subtitle.Font = Enum.Font.Gotham
 subtitle.RichText = true
-subtitle.Text = "<font color="#000000">on </font><font color="#6f1226">Discord</font><font color="#000000"> and</font><font color="#6f1226"> Github</font><font color="#000000">.</font>"
+subtitle.Text = "<font color="#000000">on </font><font color="#6f1226">Discord</font><font color="#000000"> &</font><font color="#6f1226"> Github</font><font color="#000000">.</font>"
 subtitle.TextColor3 = Color3.new(0.905882, 0.905882, 0.905882)
 subtitle.TextSize = 23
 subtitle.TextWrapped = true
@@ -273,7 +276,7 @@ title_3.Font = Enum.Font.GothamBlack
 title_3.RichText = true
 title_3.Text = "<font color="#000000">@Really</font><font color="#6f1226">Harley</font><font color="#000000">Quinn</font>"
 title_3.TextColor3 = Color3.new(0.905882, 0.905882, 0.905882)
-title_3.TextSize = 45
+title_3.TextSize = 40
 title_3.TextWrapped = true
 title_3.AnchorPoint = Vector2.new(0.5, 0)
 title_3.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -285,7 +288,7 @@ title_3.Visible = true
 title_3.Name = "Title"
 title_3.Parent = container_2
 
---// Modules
+--// Modules //
 
 local modules = {
 	[converter] = function()
@@ -352,10 +355,9 @@ local modules = {
 		
 		local function __serialize(target: {Instance}, convert_scripts: boolean): string
 			local __serialized = [=[--[[
-		    Roblox2Lua
-		    ----------
-		
 		    This code was generated with @ReallyHarleyQuinn's GUI -> LuaU magic. You know how we do it.
+		    
+		    ~ @ReallyHarleyQuinn (Discord & GitHub)
 		]]--]=]
 			local __scripts_serialized = "\n\n--// Scripts //"
 			local __modules_serialized = ""
@@ -576,7 +578,7 @@ local modules = {
 				end
 			end
 			
-			return __serialized .. (if __modules_serialized == "" then (if __scripts_serialized ~= "\n\n--// Scripts //" then "\n\n--//Modules\n\nlocal modules = {}" else "") else "\n\n--// Modules\n\nlocal modules = {\n\t"..__modules_serialized..'\n}') .. (if __scripts_serialized == "\n\n--// Scripts //" then "" else __scripts_serialized)
+			return __serialized .. (if __modules_serialized == "" then (if __scripts_serialized ~= "\n\n--// Scripts //" then "\n\n--// Modules //\n\nlocal modules = {}" else "") else "\n\n--// Modules //\n\nlocal modules = {\n\t"..__modules_serialized..'\n}') .. (if __scripts_serialized == "\n\n--// Scripts //" then "" else __scripts_serialized)
 		end
 		
 		function Converter:Serialize(stuff: {Instance}, convert_scripts: boolean): string
@@ -600,15 +602,15 @@ local modules = {
 			Toggle.OnChange = function(bool: boolean)end
 		
 			Button.MouseButton1Click:Connect(function()
-				Toggle.Value           = not Toggle.Value
-				Icon.Visible           = Toggle.Value
+				Toggle.Value = not Toggle.Value
+				Icon.Visible = Toggle.Value
 				Icon.ImageTransparency = if Toggle.Value then 0 else 1
 				Toggle.OnChange(Toggle.Value)
 			end)
 		
 			Button.MouseEnter:Connect(function()
 				if Toggle.Value == false then
-					Icon.Visible           = true
+					Icon.Visible = true
 					Icon.ImageTransparency = 0.5
 				else
 					Icon.Visible = false
@@ -616,7 +618,7 @@ local modules = {
 			end)
 		
 			Button.MouseLeave:Connect(function()
-				Icon.Visible           = Toggle.Value
+				Icon.Visible = Toggle.Value
 				Icon.ImageTransparency = 0
 			end)
 		
@@ -624,6 +626,7 @@ local modules = {
 		end
 		
 		return Toggles
+		
 	end
 }
 
@@ -652,8 +655,8 @@ task.spawn(function()
 	local UI = script.Parent:WaitForChild("UI")
 	local Welcome = UI.Pages.Welcome
 	local Convert = UI.Pages.Convert
-	local Toolbar = plugin:CreateToolbar("RHQ")
-	local RHQButton = Toolbar:CreateButton("RHQ", "@ReallyHarleyQuinn on Discord", "rbxassetid://488178149")
+	local Toolbar = plugin:CreateToolbar("@ReallyHarleyQuinn")
+	local RHQButton = Toolbar:CreateButton("@ReallyHarleyQuinn", "@ReallyHarleyQuinn on Discord & GitHub", "rbxassetid://488178149")
 	
 	local FirstTime = plugin:GetSetting("FirstTime")
 	local ConvertScripts = plugin:GetSetting("ConvertScripts")
@@ -663,18 +666,18 @@ task.spawn(function()
 	local Converter = require(Modules.Converter)
 	
 	local Widget = plugin:CreateDockWidgetPluginGui(
-		"RHQ", 
+		"@ReallyHarleyQuinn", 
 		DockWidgetPluginGuiInfo.new(
 			Enum.InitialDockState.Float,
 	
 			false,
 			false,
 	
-			350,
-			450,
+			360, -- h
+			350, -- w
 	
-			350,
-			450
+			360, -- h
+			350 -- w
 		)
 	)
 	
@@ -728,7 +731,7 @@ task.spawn(function()
 		ConvertScripts = true
 	end
 	
-	Widget.Title = "RHQ"
+	Widget.Title = "@ReallyHarleyQuinn"
 	
 	RHQButton.ClickableWhenViewportHidden = true
 	
@@ -769,7 +772,7 @@ task.spawn(function()
 		end)
 		
 		if not success then
-			Output.Source = "--// Error occured while serializing:\n--// The model is too large."
+			Output.Source = "--// Error occured while serializing:\n--// The model is too large. //"
 		end
 		
 		Selection:Set({Output})
