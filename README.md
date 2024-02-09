@@ -11,7 +11,7 @@ This Lua code generator was created with the help of @ReallyHarleyQuinn's GUI to
 5. Drag the "RHQ.rbxmx" file into the plugins folder.
 6. The rest is pretty self-explanatory! enjoy!
 
-## Author
+## Contact
 
 - **@ReallyHarleyQuinn**
   - Discord: @ReallyHarleyQuinn
