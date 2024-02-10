@@ -122,7 +122,7 @@ convert.BackgroundColor3 = Color3.new(1, 1, 1)
 convert.BackgroundTransparency = 1
 convert.BorderSizePixel = 0
 convert.Size = UDim2.new(1, 0, 1, 0)
-convert.Visible = true
+convert.Visible = false
 convert.Name = "Convert"
 convert.Parent = pages
 
