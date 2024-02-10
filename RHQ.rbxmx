@@ -1,7 +1,7 @@
 <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Folder" referent="RBXA5FD15F425EB4385B4DC255E65E1A19F">
+	<Item class="Folder" referent="RBXA0DD7274C8BA43F78757DBC341925FA3">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -10,7 +10,525 @@
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="Frame" referent="RBX80B64CF223444E2689633927E36C0E10">
+		<Item class="Script" referent="RBX5227375B25BC4F18821A2EF4B8B6E4C1">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<bool name="Disabled">false</bool>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">Main</string>
+				<token name="RunContext">0</token>
+				<string name="ScriptGuid">{D39114A1-B1A0-4227-B893-BEDF8E767D41}</string>
+				<ProtectedString name="Source"><![CDATA[if game:GetService("RunService"):IsRunning() then
+	return
+end
+
+local Selection = game:GetService("Selection")
+local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local TweenService = game:GetService("TweenService")
+
+local UI = script.Parent:WaitForChild("UI")
+local Welcome = UI.Pages.Welcome
+local Convert = UI.Pages.Convert
+local Toolbar = plugin:CreateToolbar("@ReallyHarleyQuinn")
+local RHQButton = Toolbar:CreateButton("@ReallyHarleyQuinn", "@ReallyHarleyQuinn on Discord & GitHub", "rbxassetid://488178149")
+
+local FirstTime = plugin:GetSetting("FirstTime")
+local ConvertScripts = plugin:GetSetting("ConvertScripts")
+
+local Modules = script:WaitForChild("Modules")
+local Toggles = require(Modules.Toggle)
+local Converter = require(Modules.Converter)
+
+local Widget = plugin:CreateDockWidgetPluginGui(
+	"@ReallyHarleyQuinn", 
+	DockWidgetPluginGuiInfo.new(
+		Enum.InitialDockState.Float,
+
+		false,
+		false,
+
+		400, -- w
+		300, -- h
+
+		400, -- w
+		300 -- h
+	)
+)
+
+
+local function Toggle()
+	Widget.Enabled = not Widget.Enabled
+end
+
+local function SelectionChanged()
+	local CurrentlySelected = Selection:Get()
+	if #CurrentlySelected > 0 then
+		Convert.Container.Convert.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Convert.Container.Convert.Active = true
+		Convert.Container.Convert.AutoButtonColor = false
+		Convert.Container.Convert.Text = "CONVERT " .. #CurrentlySelected .. " INSTANCE" .. if #CurrentlySelected == 1 then "" else "S"
+		Convert.Container.Output.Input.Text = CurrentlySelected[1].Name .. ".lua"
+	else
+		Convert.Container.Convert.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Convert.Container.Convert.Text = "SELECT SOMETHING TO CONVERT"
+		Convert.Container.Convert.Active = false
+		Convert.Container.Convert.AutoButtonColor = false
+		Convert.Container.Output.Input.Text = "example.lua"
+	end
+end
+
+local function UpdateButton()
+	local Toggle = Widget.Enabled
+	
+	if Toggle then
+		Welcome.Visible = false
+		Convert.Visible = true
+	end
+	
+	if FirstTime and Toggle then
+		Welcome.Visible = true
+		Convert.Visible = false
+	end
+	
+	SelectionChanged()
+	
+	RHQButton:SetActive(Toggle)
+end
+
+
+if FirstTime == nil then
+	FirstTime = true
+end
+
+if ConvertScripts == nil then
+	ConvertScripts = true
+end
+
+Widget.Title = "@ReallyHarleyQuinn"
+
+RHQButton.ClickableWhenViewportHidden = true
+
+RHQButton.Click:Connect(Toggle)
+Widget:GetPropertyChangedSignal("Enabled"):Connect(UpdateButton)
+
+UpdateButton()
+
+UI.Parent = Widget
+
+if FirstTime then
+	Welcome.Container.Continue.MouseButton1Click:Connect(function()
+		TweenService:Create(Welcome, TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, -1)}):Play()
+		Convert.Visible = true
+		Convert.Position = UDim2.fromScale(0, 1)
+		TweenService:Create(Convert, TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play()
+		plugin:SetSetting("FirstTime", false)
+	end)
+end
+
+Selection.SelectionChanged:Connect(SelectionChanged)
+
+local ConvertScriptsToggle = Toggles.new(Convert.Container.ConvertScripts.Toggle, ConvertScripts)
+ConvertScriptsToggle.OnChange = function(bool: boolean)
+	ConvertScripts = bool
+	plugin:SetSetting("ConvertScripts", bool)
+end
+
+Convert.Container.Convert.MouseButton1Click:Connect(function()
+	local Converted = Converter:Serialize(Selection:Get(), ConvertScripts)
+	
+	local Output  = Instance.new("Script")
+	Output.Parent = game:GetService("ServerScriptService")
+	Output.Name   = Convert.Container.Output.Input.Text
+	
+	local success,_ = pcall(function()
+		Output.Source = tostring(Converted)
+	end)
+	
+	if not success then
+		Output.Source = "--// Error occured while serializing: //\n--// The model is too large. //"
+	end
+	
+	Selection:Set({Output})
+	plugin:OpenScript(Output)
+	
+	ChangeHistoryService:SetWaypoint("Serialized instance(s)")
+end)
+]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+			<Item class="Folder" referent="RBX71F4CED1D0204CC0BBBD8DDBCBFC15C5">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<string name="Name">Modules</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXAA2300FB12754813B43FBEAB3E10AF7B">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">Converter</string>
+						<string name="ScriptGuid">{79285D02-6B7F-41DA-935C-622BDB646FF9}</string>
+						<ProtectedString name="Source"><![CDATA[local Converter = {}
+local http = game:GetService("HttpService")
+local api_dump = http:JSONDecode(http:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/Full-API-Dump.json"))
+local classes, enums = api_dump["Classes"], api_dump["Enums"]
+
+local to_serialize = script:GetChildren()
+
+local props_bl = {
+	"FontFace",
+	"Transparency"
+}
+
+local function dict_find(haystack: {any}, needle: any): any?
+	for key,val in pairs(haystack) do
+		if val == needle then
+			return key
+		end
+	end
+end
+
+local function __convert(dump: {}): {}
+	local function get_all_properties(parsed_dump: {}, target)
+		local properties = {}
+
+		local __target = parsed_dump[target]
+		local members = __target["Members"]
+
+		for _,member in pairs(members) do
+			if member.MemberType == "Property" and member.Security.Read == "None" and member.Security.Write == "None" then
+				if not member.Tags or ((not table.find(member.Tags, "ReadOnly")) and (not table.find(member.Tags, "Deprecated"))) then
+					if table.find(props_bl, member.Name) then
+						continue
+					end
+					table.insert(properties, member.Name)
+				end
+			end
+		end
+
+		if __target.Superclass ~= "<<<ROOT>>>" then
+			for _,property in pairs(get_all_properties(parsed_dump, __target.Superclass)) do
+				table.insert(properties, property)
+			end
+		end
+
+		return properties
+	end
+
+	local parsed   = {}
+	local __output = {}
+
+	for _,class in pairs(dump) do
+		parsed[class.Name] = class
+	end
+
+	for name,value in pairs(parsed) do
+		__output[name] = get_all_properties(parsed, name)
+	end
+
+	return __output
+end
+
+local function __serialize(target: {Instance}, convert_scripts: boolean): string
+	local __serialized = [=[--[[
+    This code was generated with @ReallyHarleyQuinn's GUI -> LuaU magic. You know how we do it.
+    
+    ~ @ReallyHarleyQuinn (Discord & GitHub)
+]]--]=]
+	local __scripts_serialized = "\n\n--// Scripts //"
+	local __modules_serialized = ""
+	local names   = {[workspace] = "workspace"}
+	local props   = __convert(classes)
+	local scripts = {}
+
+	local function snakify(name: string): string
+		local i = 0
+		name = string.gsub(name, "[%W%s]", "")
+		for match in string.gmatch(name, "%u+") do
+			i += 1
+			name = string.gsub(name, match, (if i == 1 then "" else "_")..string.lower(match))
+		end
+
+		if tonumber(string.sub(name, 1, 1)) then
+			return "_"..name
+		end
+
+		return name
+	end
+
+	local function parse_prop(prop: any): string
+		local t = typeof(prop)
+		if t == "string" then
+			return '"'..prop..'"'
+		end
+		if t == "boolean" then
+			return tostring(prop)
+		end
+		if t == "number" then
+			return tostring(prop)
+		end
+		if t == "Vector2" then
+			return string.format('Vector2.new(%s, %s)', prop.X, prop.Y)
+		end
+		if t == "Vector3" then
+			return string.format('Vector3.new(%s, %s, %s)', prop.X, prop.Y, prop.Z)
+		end
+		if t == "Axes" then
+			return string.format("Axes.new(%s, %s, %s)", parse_prop(prop.X), parse_prop(prop.Y), parse_prop(prop.Z))
+		end
+		if t == "BrickColor" then
+			return string.format('BrickColor.new(%s, %s, %s)', prop.r, prop.g, prop.b)
+		end
+		if t == "CFrame" then
+			return string.format('CFrame.fromMatrix(%s, %s, %s, %s)', parse_prop(prop.Position), parse_prop(prop.RightVector), parse_prop(prop.UpVector), parse_prop(-prop.LookVector))
+		end
+		if t == "Color3" then
+			return string.format('Color3.new(%s)', tostring(prop))
+		end
+		if t == "ColorSequence" then
+			local val = ""
+			for i,keypoint in pairs(prop.Keypoints) do
+				val ..= (if i == 1 then "" else ", ") .. string.format("ColorSequenceKeypoint.new(%s, Color3.new(%s))", keypoint.Time, tostring(keypoint.Value))
+			end
+			return string.format("ColorSequence.new({%s})", val)
+		end
+		if t == "Instance" then
+			if names[prop] then
+				return names[prop]
+			end
+			return "game."..prop:GetFullName()
+		end
+		if t == "EnumItem" then
+			return tostring(prop)
+		end
+		if t == "UDim" then
+			return string.format("UDim.new(%s, %s)", prop.Scale, prop.Offset)
+		end
+		if t == "UDim2" then
+			return string.format("UDim2.new(%s)", string.gsub(string.gsub(tostring(prop), "{", ""), "}", ""))
+		end
+		if t == "PhysicalProperties" then
+			return string.format("PhysicalProperties.new(%s, %s, %s, %s, %s)", prop.Density, prop.Friction, prop.Elasticity, prop.FrictionWeight, prop.ElasticityWeight)
+		end
+		if t == "NumberRange" then
+			return string.format("NumberRange.new(%s, %s)", prop.Min, prop.Max)
+		end
+		if t == "NumberSequence" then
+			local val = ""
+			for i,keypoint in pairs(prop.Keypoints) do
+				val ..= (if i == 1 then "" else ", ") .. string.format("NumberSequenceKeypoint.new(%s, %s)", keypoint.Time, keypoint.Value)
+			end
+			return string.format("NumberSequence.new({%s})", val)
+		end
+		if t == "Rect" then
+			return string.format("Rect.new(%s, %s)", tostring(prop.Min), tostring(prop.Max))
+		end
+		warn("\""..t.."\" is not a supported property type!")
+		return "--[[ This property isn't supported! Please report this as an issue. ]]"
+	end
+
+	local function to_lua(instance: Instance, parent: Instance): string
+		local name = snakify(instance.Name)
+		local configured_name = name
+		if dict_find(names, name) then
+			local i = 2
+			repeat 
+				do
+					configured_name = name .. "_" .. i
+					i += 1
+				end
+			until not dict_find(names, configured_name)
+		end
+
+		names[instance] = configured_name
+		name = configured_name
+
+		local class = instance.ClassName
+
+		local default = {}
+
+		local luad = string.format('\n\nlocal %s = Instance.new("%s")', name, class)
+
+		if class == "TouchTransmitter"then
+			luad = string.format('\n\n%s.Touched:Connect(function()end)\nlocal %s = %s:WaitForChild("TouchInterest")', names[parent], name, names[parent])
+		else
+			local default = Instance.new(class)
+
+			luad = string.format('\n\nlocal %s = Instance.new("%s")', name, class)
+
+			for _, property in pairs(props[class]) do
+				local val = nil
+				pcall(function()
+					val = instance[property]
+				end)
+				if property == "Parent" then
+					luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. (names[parent] or "")
+					continue
+				elseif property == "Visible" or property == "ResetOnSpawn" or property == "IgnoreGuiInset" or property == "AutoButtonColor" then -- fix AutoButtonColor
+					luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. (parse_prop(val) or "false")
+					continue
+				elseif property == "ZIndexBehavior" then
+					luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. (parse_prop(val) or "Enum.ZIndexBehavior.Sibling")
+					continue
+				end
+				if not val then
+					continue
+				end
+				if val == default[property] then
+					continue
+				end
+				if (not instance:IsA("BasePart")) or (instance:IsA("BasePart") and property ~= "Position") then
+					luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. parse_prop(val)
+				end
+			end
+
+		end
+
+		return luad	
+	end
+
+	local commit_script = nil
+
+	local function commit(instance, parent)
+		__serialized ..= to_lua(instance, parent)
+		local children = instance:GetChildren()
+		if #children > 0 then
+			for _,child in pairs(children) do
+				if child:IsA("LuaSourceContainer") and convert_scripts then
+					commit_script(child, instance)
+				else
+					commit(child, instance)
+				end
+			end
+		end
+	end
+
+	commit_script = function(script: Instance, parent: Instance)
+		if not convert_scripts then 
+			return
+		end
+		__serialized ..= to_lua(script, parent)
+		if script:IsA("Script") or script:IsA("LocalScript") then
+			local script_luad = [[-- ]]..script.Name.."\n"..[[task.spawn(function()
+	local script = ]]..names[script]
+
+			if script.Disabled == true then
+				script_luad ..= "\n\tscript.Disabled = true\n\n\tscript:GetPropertyChangedSignal(\"Disabled\"):Wait()"
+			end
+
+			script_luad ..= "\n\n\t"..[[local oldreq = require
+	local function require(target)
+		if modules[target] then
+			return modules[target]()
+		end
+		return oldreq(target)
+	end]]
+
+			script_luad ..= "\n\n\t" .. string.gsub(script.Source, "\n", "\n\t") .. "\nend)"
+
+			__scripts_serialized ..= "\n\n" .. script_luad
+		elseif script:IsA("ModuleScript") then
+			__modules_serialized ..= "["..names[script].."] = function()\n\t\t"..string.gsub(script.Source, "\n", "\n\t\t").."\n\tend"
+		end
+		if #script:GetChildren() > 0 then
+			for _,child in pairs(script:GetChildren()) do
+				if child:IsA("LuaSourceContainer") and convert_scripts then
+					commit_script(child, script)
+				else
+					commit(child, script)
+				end
+			end
+		end
+	end
+
+	for i,instance in pairs(target) do
+		if instance:IsA("LuaSourceContainer") then
+			if convert_scripts then
+				commit_script(instance, workspace)
+			end
+		else
+			if i == 1 then
+				__serialized ..= "\n\n--// Instances //"
+			end
+			commit(instance, workspace)
+		end
+	end
+	
+	return __serialized .. (if __modules_serialized == "" then (if __scripts_serialized ~= "\n\n--// Scripts //" then "\n\n--// Modules //\n\nlocal modules = {}" else "") else "\n\n--// Modules //\n\nlocal modules = {\n\t"..__modules_serialized..'\n}') .. (if __scripts_serialized == "\n\n--// Scripts //" then "" else __scripts_serialized)
+end
+
+function Converter:Serialize(stuff: {Instance}, convert_scripts: boolean): string
+	return __serialize(stuff, convert_scripts)
+end
+
+return Converter
+]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX82156E3F753E4BDBA3F79219B595F964">
+					<Properties>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<Content name="LinkedSource"><null></null></Content>
+						<string name="Name">Toggle</string>
+						<string name="ScriptGuid">{A0F419D9-B9D1-4943-B592-1CEA93AD055F}</string>
+						<ProtectedString name="Source"><![CDATA[local Toggles = {}
+
+Toggles.new = function(Button: TextButton, default: boolean)
+	local Toggle = {}
+
+	Toggle.Value = default
+	Toggle.Button = Button
+
+	local Icon = Button:FindFirstChild("Icon")
+	Icon.Visible = default
+	
+	Toggle.OnChange = function(bool: boolean)end
+
+	Button.MouseButton1Click:Connect(function()
+		Toggle.Value = not Toggle.Value
+		Icon.Visible = Toggle.Value
+		Icon.ImageTransparency = if Toggle.Value then 0 else 1
+		Toggle.OnChange(Toggle.Value)
+	end)
+
+	Button.MouseEnter:Connect(function()
+		if Toggle.Value == false then
+			Icon.Visible = true
+			Icon.ImageTransparency = 0.5
+		else
+			Icon.Visible = false
+		end
+	end)
+
+	Button.MouseLeave:Connect(function()
+		Icon.Visible = Toggle.Value
+		Icon.ImageTransparency = 0
+	end)
+
+	return Toggle
+end
+
+return Toggles
+]]></ProtectedString>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+					</Properties>
+				</Item>
+			</Item>
+		</Item>
+		<Item class="Frame" referent="RBXBD0D7FD472C6413B9BC0B9E70B2874EA">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -73,7 +591,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Folder" referent="RBX34F78FE502304A6FA736B61AE62C5FCB">
+			<Item class="Folder" referent="RBX5CBE5A1458A44FC6B7C015A0D9B6EB3E">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -82,7 +600,7 @@
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="Frame" referent="RBXE5684C18A24644A8AC26FF162E015BE9">
+				<Item class="Frame" referent="RBX48E68486E7D74708801CDBCAC5B6B040">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -145,7 +663,7 @@
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX233B24688D334C69A83B4686F566DB58">
+					<Item class="Frame" referent="RBX79FB7F2AA4EA44D7A5C060501508A69C">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -208,7 +726,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBX4B2F840F3C1645CA907B8D4A9D152454">
+						<Item class="TextLabel" referent="RBXCD9C616E94E445A68EEA10BF5BB36411">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -302,7 +820,7 @@
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="TextButton" referent="RBX544BE71C0AF64A13849994EB5AEFD256">
+						<Item class="TextButton" referent="RBX2D5906335EC647FAAD9AE23E9B53990D">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -399,7 +917,7 @@
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBXE2A25263699D4727B3E5345484DF03C3">
+							<Item class="UICorner" referent="RBX08AB818DFA2A403B8222C97EE61974EF">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -413,7 +931,7 @@
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="LocalScript" referent="RBX83055CC902424D69B840AA81AB101C44">
+							<Item class="LocalScript" referent="RBXACCB9451D9FC42F6AFAACE5AF58AA135">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -422,7 +940,7 @@
 									<Content name="LinkedSource"><null></null></Content>
 									<string name="Name">mouse</string>
 									<token name="RunContext">0</token>
-									<string name="ScriptGuid">{DBEA40D7-AFA9-4AB9-99D1-D3FAD0A34EBE}</string>
+									<string name="ScriptGuid">{0A3275D3-C70B-4857-9DB5-EE484D705D90}</string>
 									<ProtectedString name="Source"><![CDATA[local t = script.Parent
 local tweenService = game:GetService("TweenService")
 local c1 = Color3.fromRGB(0, 0, 0)
@@ -444,7 +962,7 @@ end)
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="TextLabel" referent="RBX4CC90F6B37C544F9A6D024CD414D86D4">
+						<Item class="TextLabel" referent="RBX10853100C2224AF780A512C07DC84ED7">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -539,7 +1057,7 @@ end)
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBXECB18854E61E4539B28A0AE9397AABB2">
+				<Item class="Frame" referent="RBX9516B2F1DDC74B0A856EFFDFF2B97A6B">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -602,7 +1120,7 @@ end)
 						<bool name="Visible">false</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX67ABF47A30E648859F97D5ADF222D8EE">
+					<Item class="Frame" referent="RBX7FE3B6C26117419D928E7C7876C724FF">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -665,7 +1183,7 @@ end)
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextButton" referent="RBXA07AA688DE6B4B3389193941C9649BAE">
+						<Item class="TextButton" referent="RBX0B3D2A29E2CC4714913EF65C025C69B0">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -762,7 +1280,7 @@ end)
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBXC9D08F0A91C64E28B0F54DCDCAF02109">
+							<Item class="UICorner" referent="RBX2C001FF32BFB4D69AC68472232641C6B">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -776,7 +1294,7 @@ end)
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="UIPadding" referent="RBXF80B0216F0034AD0906FFCA9550FD693">
+							<Item class="UIPadding" referent="RBX5C5C51A449674D20868A464DB510D05C">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -802,7 +1320,7 @@ end)
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="LocalScript" referent="RBX0C3F1ABA3F814C56B2D8BA76D10418F5">
+							<Item class="LocalScript" referent="RBX90AE19ECF5B8445FBEACD0E0EAB8D403">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -811,7 +1329,7 @@ end)
 									<Content name="LinkedSource"><null></null></Content>
 									<string name="Name">mouse</string>
 									<token name="RunContext">0</token>
-									<string name="ScriptGuid">{58DDFD94-0239-4EBC-84BF-4ADBC4B4007F}</string>
+									<string name="ScriptGuid">{B36EBFD0-9B79-44D3-9F3C-C8B314C40498}</string>
 									<ProtectedString name="Source"><![CDATA[local t = script.Parent
 local tweenService = game:GetService("TweenService")
 local c1 = Color3.fromRGB(0, 0, 0)
@@ -833,7 +1351,7 @@ end)
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="Frame" referent="RBXFE6EAE021C0B4EC0983E2AAE06D05607">
+						<Item class="Frame" referent="RBX135896575ED8423D9DC1F9BE6ED92B1B">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -896,7 +1414,7 @@ end)
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UIStroke" referent="RBX8B6D54E415F64C169A556AF9773D4E4D">
+							<Item class="UIStroke" referent="RBXA8919101F59B4D8CAE47009CC4C8BF77">
 								<Properties>
 									<token name="ApplyStrokeMode">0</token>
 									<BinaryString name="AttributesSerialize"></BinaryString>
@@ -916,7 +1434,7 @@ end)
 									<float name="Transparency">0</float>
 								</Properties>
 							</Item>
-							<Item class="TextBox" referent="RBXC532A39B2A4F48548D814153BC7D14B2">
+							<Item class="TextBox" referent="RBXB7DE8E315952402589B7D0075DAF0C21">
 								<Properties>
 									<bool name="Active">true</bool>
 									<Vector2 name="AnchorPoint">
@@ -1019,7 +1537,7 @@ end)
 									<bool name="Visible">true</bool>
 									<int name="ZIndex">1</int>
 								</Properties>
-								<Item class="UICorner" referent="RBXBC2E9DDD12A3490097862DA2C375F31B">
+								<Item class="UICorner" referent="RBXCFC1F693531B4689B89C07B2E0D305AE">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1033,7 +1551,7 @@ end)
 										<BinaryString name="Tags"></BinaryString>
 									</Properties>
 								</Item>
-								<Item class="UIPadding" referent="RBXB2410F6C92B94B1FB9444DE25856013F">
+								<Item class="UIPadding" referent="RBXFF82B6BFED2049099A121FA0BF62074D">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1060,7 +1578,7 @@ end)
 									</Properties>
 								</Item>
 							</Item>
-							<Item class="UICorner" referent="RBXFD9C451662C14295ACB4279C6BBDAB80">
+							<Item class="UICorner" referent="RBX70747F5B93424816A027C4B954E5DC2F">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1075,7 +1593,7 @@ end)
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="Frame" referent="RBXDF0A7DBB43CD4668B899775238917EC5">
+						<Item class="Frame" referent="RBX2E2017C551E345528A97B5E5F3D5975A">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1138,7 +1656,7 @@ end)
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBXB51E07B4850F45D19C19B9605328C0D7">
+							<Item class="UICorner" referent="RBX4ECF13C132BA40EA87BC34CB99B48682">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1152,7 +1670,7 @@ end)
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="UIStroke" referent="RBXD56A07AF02284B1BB5245850314F4334">
+							<Item class="UIStroke" referent="RBXE88F3E8CD0604AE885334E4789131167">
 								<Properties>
 									<token name="ApplyStrokeMode">0</token>
 									<BinaryString name="AttributesSerialize"></BinaryString>
@@ -1172,7 +1690,7 @@ end)
 									<float name="Transparency">0</float>
 								</Properties>
 							</Item>
-							<Item class="TextButton" referent="RBX8324A54D5C844CB889509163A7CE00A6">
+							<Item class="TextButton" referent="RBX63B6A662A15649988AF7947A1599B9C2">
 								<Properties>
 									<bool name="Active">true</bool>
 									<Vector2 name="AnchorPoint">
@@ -1269,7 +1787,7 @@ end)
 									<bool name="Visible">true</bool>
 									<int name="ZIndex">1</int>
 								</Properties>
-								<Item class="UICorner" referent="RBX85E79232EE9A43548D1CD44E5E2CFA77">
+								<Item class="UICorner" referent="RBX7BBAF776B4B1433C8CD91988A927CDDB">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1283,7 +1801,7 @@ end)
 										<BinaryString name="Tags"></BinaryString>
 									</Properties>
 								</Item>
-								<Item class="ImageLabel" referent="RBXF8267FC43B4E453D92D09123C3DE91FB">
+								<Item class="ImageLabel" referent="RBX577CAA276C824A209EA0E26C593F33E5">
 									<Properties>
 										<bool name="Active">false</bool>
 										<Vector2 name="AnchorPoint">
@@ -1381,7 +1899,7 @@ end)
 									</Properties>
 								</Item>
 							</Item>
-							<Item class="TextLabel" referent="RBXD432FC00899649EE818891B83D1995D1">
+							<Item class="TextLabel" referent="RBX5B1F2ABD51084F4F833A9559EB7D0873">
 								<Properties>
 									<bool name="Active">false</bool>
 									<Vector2 name="AnchorPoint">
@@ -1473,7 +1991,7 @@ end)
 									<bool name="Visible">true</bool>
 									<int name="ZIndex">1</int>
 								</Properties>
-								<Item class="UIPadding" referent="RBXDD87A3D154A74EC9B4EAEF493E873824">
+								<Item class="UIPadding" referent="RBXE0507555363640B9B275CC9F48AD016D">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1501,7 +2019,7 @@ end)
 								</Item>
 							</Item>
 						</Item>
-						<Item class="TextLabel" referent="RBX305E6FB2D19F4C2286909671578EA07A">
+						<Item class="TextLabel" referent="RBX625733E438214434A964E07D3E566117">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1596,525 +2114,6 @@ end)
 							</Properties>
 						</Item>
 					</Item>
-				</Item>
-			</Item>
-		</Item>
-		<Item class="Script" referent="RBXE68EAC66A9D9472D8A37E2E6355DC890">
-			<Properties>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<bool name="Disabled">false</bool>
-				<Content name="LinkedSource"><null></null></Content>
-				<string name="Name">Main</string>
-				<token name="RunContext">0</token>
-				<string name="ScriptGuid">{E02CE91D-6EAA-46E4-9C38-B90380617C7F}</string>
-				<ProtectedString name="Source"><![CDATA[if game:GetService("RunService"):IsRunning() then
-	return
-end
-
-local Selection = game:GetService("Selection")
-local ChangeHistoryService = game:GetService("ChangeHistoryService")
-local TweenService = game:GetService("TweenService")
-
-local UI = script.Parent:WaitForChild("UI")
-local Welcome = UI.Pages.Welcome
-local Convert = UI.Pages.Convert
-local Toolbar = plugin:CreateToolbar("@ReallyHarleyQuinn")
-local RHQButton = Toolbar:CreateButton("@ReallyHarleyQuinn", "@ReallyHarleyQuinn on Discord & GitHub", "rbxassetid://488178149")
-
-local FirstTime = plugin:GetSetting("FirstTime")
-local ConvertScripts = plugin:GetSetting("ConvertScripts")
-
-local Modules = script:WaitForChild("Modules")
-local Toggles = require(Modules.Toggle)
-local Converter = require(Modules.Converter)
-
-local Widget = plugin:CreateDockWidgetPluginGui(
-	"@ReallyHarleyQuinn", 
-	DockWidgetPluginGuiInfo.new(
-		Enum.InitialDockState.Float,
-
-		false,
-		false,
-
-		360, -- h
-		350, -- w
-
-		360, -- h
-		350 -- w
-	)
-)
-
-
-local function Toggle()
-	Widget.Enabled = not Widget.Enabled
-end
-
-local function SelectionChanged()
-	local CurrentlySelected = Selection:Get()
-	if #CurrentlySelected > 0 then
-		Convert.Container.Convert.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-		Convert.Container.Convert.Active = true
-		Convert.Container.Convert.AutoButtonColor = false
-		Convert.Container.Convert.Text = "CONVERT " .. #CurrentlySelected .. " INSTANCE" .. if #CurrentlySelected == 1 then "" else "S"
-		Convert.Container.Output.Input.Text = CurrentlySelected[1].Name .. ".lua"
-	else
-		Convert.Container.Convert.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-		Convert.Container.Convert.Text = "SELECT SOMETHING TO CONVERT"
-		Convert.Container.Convert.Active = false
-		Convert.Container.Convert.AutoButtonColor = false
-		Convert.Container.Output.Input.Text = "..."
-	end
-end
-
-local function UpdateButton()
-	local Toggle = Widget.Enabled
-	
-	if Toggle then
-		Welcome.Visible = false
-		Convert.Visible = true
-	end
-	
-	if FirstTime and Toggle then
-		--FadeIn(UI.Pages.Welcome)
-		Welcome.Visible = true
-		Convert.Visible = false
-	end
-	
-	SelectionChanged()
-	
-	RHQButton:SetActive(Toggle)
-end
-
-
-if FirstTime == nil then
-	FirstTime = true
-end
-
-if ConvertScripts == nil then
-	ConvertScripts = true
-end
-
-Widget.Title = "@ReallyHarleyQuinn"
-
-RHQButton.ClickableWhenViewportHidden = true
-
-RHQButton.Click:Connect(Toggle)
-Widget:GetPropertyChangedSignal("Enabled"):Connect(UpdateButton)
-
-UpdateButton()
-
-UI.Parent = Widget
-
-if FirstTime then
-	Welcome.Container.Continue.MouseButton1Click:Connect(function()
-		TweenService:Create(Welcome, TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, -1)}):Play()
-		Convert.Visible = true
-		Convert.Position = UDim2.fromScale(0, 1)
-		TweenService:Create(Convert, TweenInfo.new(.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, 0)}):Play()
-		plugin:SetSetting("FirstTime", false)
-	end)
-end
-
-Selection.SelectionChanged:Connect(SelectionChanged)
-
-local ConvertScriptsToggle = Toggles.new(Convert.Container.ConvertScripts.Toggle, ConvertScripts)
-ConvertScriptsToggle.OnChange = function(bool: boolean)
-	ConvertScripts = bool
-	plugin:SetSetting("ConvertScripts", bool)
-end
-
-Convert.Container.Convert.MouseButton1Click:Connect(function()
-	local Converted = Converter:Serialize(Selection:Get(), ConvertScripts)
-	
-	local Output  = Instance.new("Script")
-	Output.Parent = game:GetService("ServerScriptService")
-	Output.Name   = Convert.Container.Output.Input.Text
-	
-	local success,_ = pcall(function()
-		Output.Source = tostring(Converted)
-	end)
-	
-	if not success then
-		Output.Source = "--// Error occured while serializing:\n--// The model is too large. //"
-	end
-	
-	Selection:Set({Output})
-	plugin:OpenScript(Output)
-	
-	ChangeHistoryService:SetWaypoint("Serialized instance(s)")
-end)
-]]></ProtectedString>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-			</Properties>
-			<Item class="Folder" referent="RBXD19FFC8CDF9D487F92556BF509FD6FF1">
-				<Properties>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
-					<string name="Name">Modules</string>
-					<int64 name="SourceAssetId">-1</int64>
-					<BinaryString name="Tags"></BinaryString>
-				</Properties>
-				<Item class="ModuleScript" referent="RBXACDF24E2B11042A0AA9D70FCF0392B1F">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
-						<Content name="LinkedSource"><null></null></Content>
-						<string name="Name">Converter</string>
-						<string name="ScriptGuid">{B4CBEB62-E6CA-46F4-990D-391DB6C89992}</string>
-						<ProtectedString name="Source"><![CDATA[local Converter = {}
-local http = game:GetService("HttpService")
-local api_dump = http:JSONDecode(http:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/Mini-API-Dump.json"))
-local classes, enums = api_dump["Classes"], api_dump["Enums"]
-
-local to_serialize = script:GetChildren()
-
-local props_bl = {
-	"FontFace",
-	"Transparency"
-}
-
-local function dict_find(haystack: {any}, needle: any): any?
-	for key,val in pairs(haystack) do
-		if val == needle then
-			return key
-		end
-	end
-end
-
-local function __convert(dump: {}): {}
-	local function get_all_properties(parsed_dump: {}, target)
-		local properties = {}
-
-		local __target = parsed_dump[target]
-		local members = __target["Members"]
-
-		for _,member in pairs(members) do
-			if member.MemberType == "Property" and member.Security.Read == "None" and member.Security.Write == "None" then
-				if not member.Tags or ((not table.find(member.Tags, "ReadOnly")) and (not table.find(member.Tags, "Deprecated"))) then
-					if table.find(props_bl, member.Name) then
-						continue
-					end
-					table.insert(properties, member.Name)
-				end
-			end
-		end
-
-		if __target.Superclass ~= "<<<ROOT>>>" then
-			for _,property in pairs(get_all_properties(parsed_dump, __target.Superclass)) do
-				table.insert(properties, property)
-			end
-		end
-
-		return properties
-	end
-
-	local parsed   = {}
-	local __output = {}
-
-	for _,class in pairs(dump) do
-		parsed[class.Name] = class
-	end
-
-	for name,value in pairs(parsed) do
-		__output[name] = get_all_properties(parsed, name)
-	end
-
-	return __output
-end
-
-local function __serialize(target: {Instance}, convert_scripts: boolean): string
-	local __serialized = [=[--[[
-    This code was generated with @ReallyHarleyQuinn's GUI -> LuaU magic. You know how we do it.
-    
-    ~ @ReallyHarleyQuinn (Discord & GitHub)
-]]--]=]
-	local __scripts_serialized = "\n\n--// Scripts //"
-	local __modules_serialized = ""
-	local names   = {[workspace] = "workspace"}
-	local props   = __convert(classes)
-	local scripts = {}
-
-	local function snakify(name: string): string
-		local i = 0
-		name = string.gsub(name, "[%W%s]", "")
-		for match in string.gmatch(name, "%u+") do
-			i += 1
-			name = string.gsub(name, match, (if i == 1 then "" else "_")..string.lower(match))
-		end
-
-		if tonumber(string.sub(name, 1, 1)) then
-			return "_"..name
-		end
-
-		return name
-	end
-
-	local function parse_prop(prop: any): string
-		local t = typeof(prop)
-		if t == "string" then
-			return '"'..prop..'"'
-		end
-		if t == "boolean" then
-			return tostring(prop)
-		end
-		-- autobuttoncolor
-		if t == "number" then
-			return tostring(prop)
-		end
-		if t == "Vector2" then
-			return string.format('Vector2.new(%s, %s)', prop.X, prop.Y)
-		end
-		if t == "Vector3" then
-			return string.format('Vector3.new(%s, %s, %s)', prop.X, prop.Y, prop.Z)
-		end
-		if t == "Axes" then
-			return string.format("Axes.new(%s, %s, %s)", parse_prop(prop.X), parse_prop(prop.Y), parse_prop(prop.Z))
-		end
-		if t == "BrickColor" then
-			return string.format('BrickColor.new(%s, %s, %s)', prop.r, prop.g, prop.b)
-		end
-		if t == "CFrame" then
-			return string.format('CFrame.fromMatrix(%s, %s, %s, %s)', parse_prop(prop.Position), parse_prop(prop.RightVector), parse_prop(prop.UpVector), parse_prop(-prop.LookVector))
-		end
-		if t == "Color3" then
-			return string.format('Color3.new(%s)', tostring(prop))
-		end
-		if t == "ColorSequence" then
-			local val = ""
-			for i,keypoint in pairs(prop.Keypoints) do
-				val ..= (if i == 1 then "" else ", ") .. string.format("ColorSequenceKeypoint.new(%s, Color3.new(%s))", keypoint.Time, tostring(keypoint.Value))
-			end
-			return string.format("ColorSequence.new({%s})", val)
-		end
-		if t == "Instance" then
-			if names[prop] then
-				return names[prop]
-			end
-			return "game."..prop:GetFullName()
-		end
-		if t == "EnumItem" then
-			return tostring(prop)
-		end
-		if t == "UDim" then
-			return string.format("UDim.new(%s, %s)", prop.Scale, prop.Offset)
-		end
-		if t == "UDim2" then
-			return string.format("UDim2.new(%s)", string.gsub(string.gsub(tostring(prop), "{", ""), "}", ""))
-		end
-		if t == "PhysicalProperties" then
-			return string.format("PhysicalProperties.new(%s, %s, %s, %s, %s)", prop.Density, prop.Friction, prop.Elasticity, prop.FrictionWeight, prop.ElasticityWeight)
-		end
-		if t == "NumberRange" then
-			return string.format("NumberRange.new(%s, %s)", prop.Min, prop.Max)
-		end
-		if t == "NumberSequence" then
-			local val = ""
-			for i,keypoint in pairs(prop.Keypoints) do
-				val ..= (if i == 1 then "" else ", ") .. string.format("NumberSequenceKeypoint.new(%s, %s)", keypoint.Time, keypoint.Value)
-			end
-			return string.format("NumberSequence.new({%s})", val)
-		end
-		if t == "Rect" then
-			return string.format("Rect.new(%s, %s)", tostring(prop.Min), tostring(prop.Max))
-		end
-		warn("\""..t.."\" is not a supported property type!")
-		return "--[[ This property isn't supported! Please report this as an issue. ]]"
-	end
-
-	local function to_lua(instance: Instance, parent: Instance): string
-		local name = snakify(instance.Name)
-		local configured_name = name
-		if dict_find(names, name) then
-			local i = 2
-			repeat 
-				do
-					configured_name = name .. "_" .. i
-					i += 1
-				end
-			until not dict_find(names, configured_name)
-		end
-
-		names[instance] = configured_name
-		name = configured_name
-
-		local class = instance.ClassName
-
-		local default = {}
-
-		local luad = string.format('\n\nlocal %s = Instance.new("%s")', name, class)
-
-		if class == "TouchTransmitter"then
-			luad = string.format('\n\n%s.Touched:Connect(function()end)\nlocal %s = %s:WaitForChild("TouchInterest")', names[parent], name, names[parent])
-		else
-			local default = Instance.new(class)
-
-			luad = string.format('\n\nlocal %s = Instance.new("%s")', name, class)
-
-			for _,property in pairs(props[class]) do
-				local val = nil
-				pcall(function()
-					val = instance[property]
-				end)
-				if property == "Parent" then
-					luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = " .. (names[parent] or "")
-					continue
-				elseif property == "Visible" or property == "ResetOnSpawn" or property == "IgnoreGuiInset" then
-					luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = " .. (parse_prop(val) or "false")
-					continue
-				elseif property == "ZIndexBehavior" then
-					luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = " .. (parse_prop(val) or "Enum.ZIndexBehavior.Sibling")
-					continue
-				end
-				if not val then
-					continue
-				end
-				if val == default[property] then
-					continue
-				end
-				if (not instance:IsA("BasePart")) or (instance:IsA("BasePart") and property ~= "Position") then
-					luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = "..parse_prop(val)
-				end
-			end
-		end
-
-		return luad	
-	end
-
-	local commit_script = nil
-
-	local function commit(instance, parent)
-		__serialized ..= to_lua(instance, parent)
-		local children = instance:GetChildren()
-		if #children > 0 then
-			for _,child in pairs(children) do
-				if child:IsA("LuaSourceContainer") and convert_scripts then
-					commit_script(child, instance)
-				else
-					commit(child, instance)
-				end
-			end
-		end
-	end
-
-	commit_script = function(script: Instance, parent: Instance)
-		if not convert_scripts then 
-			return
-		end
-		__serialized ..= to_lua(script, parent)
-		if script:IsA("Script") or script:IsA("LocalScript") then
-			local script_luad = [[-- ]]..script.Name.."\n"..[[task.spawn(function()
-	local script = ]]..names[script]
-
-			if script.Disabled == true then
-				script_luad ..= "\n\tscript.Disabled = true\n\n\tscript:GetPropertyChangedSignal(\"Disabled\"):Wait()"
-			end
-
-			script_luad ..= "\n\n\t"..[[local oldreq = require
-	local function require(target)
-		if modules[target] then
-			return modules[target]()
-		end
-		return oldreq(target)
-	end]]
-
-			script_luad ..= "\n\n\t" .. string.gsub(script.Source, "\n", "\n\t") .. "\nend)"
-
-			__scripts_serialized ..= "\n\n" .. script_luad
-		elseif script:IsA("ModuleScript") then
-			__modules_serialized ..= "["..names[script].."] = function()\n\t\t"..string.gsub(script.Source, "\n", "\n\t\t").."\n\tend"
-		end
-		if #script:GetChildren() > 0 then
-			for _,child in pairs(script:GetChildren()) do
-				if child:IsA("LuaSourceContainer") and convert_scripts then
-					commit_script(child, script)
-				else
-					commit(child, script)
-				end
-			end
-		end
-	end
-
-	for i,instance in pairs(target) do
-		if instance:IsA("LuaSourceContainer") then
-			if convert_scripts then
-				commit_script(instance, workspace)
-			end
-		else
-			if i == 1 then
-				__serialized ..= "\n\n--// Instances //"
-			end
-			commit(instance, workspace)
-		end
-	end
-	
-	return __serialized .. (if __modules_serialized == "" then (if __scripts_serialized ~= "\n\n--// Scripts //" then "\n\n--// Modules //\n\nlocal modules = {}" else "") else "\n\n--// Modules //\n\nlocal modules = {\n\t"..__modules_serialized..'\n}') .. (if __scripts_serialized == "\n\n--// Scripts //" then "" else __scripts_serialized)
-end
-
-function Converter:Serialize(stuff: {Instance}, convert_scripts: boolean): string
-	return __serialize(stuff, convert_scripts)
-end
-
-return Converter
-]]></ProtectedString>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-					</Properties>
-				</Item>
-				<Item class="ModuleScript" referent="RBX9ABD08C7C26849B6A5D66A18633F0636">
-					<Properties>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
-						<Content name="LinkedSource"><null></null></Content>
-						<string name="Name">Toggle</string>
-						<string name="ScriptGuid">{A3FD8FBF-E172-4F0F-A814-E6D84CCA3188}</string>
-						<ProtectedString name="Source"><![CDATA[local Toggles = {}
-
-Toggles.new = function(Button: TextButton, default: boolean)
-	local Toggle = {}
-
-	Toggle.Value = default
-	Toggle.Button = Button
-
-	local Icon = Button:FindFirstChild("Icon")
-	Icon.Visible = default
-	
-	Toggle.OnChange = function(bool: boolean)end
-
-	Button.MouseButton1Click:Connect(function()
-		Toggle.Value = not Toggle.Value
-		Icon.Visible = Toggle.Value
-		Icon.ImageTransparency = if Toggle.Value then 0 else 1
-		Toggle.OnChange(Toggle.Value)
-	end)
-
-	Button.MouseEnter:Connect(function()
-		if Toggle.Value == false then
-			Icon.Visible = true
-			Icon.ImageTransparency = 0.5
-		else
-			Icon.Visible = false
-		end
-	end)
-
-	Button.MouseLeave:Connect(function()
-		Icon.Visible = Toggle.Value
-		Icon.ImageTransparency = 0
-	end)
-
-	return Toggle
-end
-
-return Toggles
-]]></ProtectedString>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-					</Properties>
 				</Item>
 			</Item>
 		</Item>
