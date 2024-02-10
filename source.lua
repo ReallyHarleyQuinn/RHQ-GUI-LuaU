@@ -83,6 +83,7 @@ continue.Font = Enum.Font.GothamBlack
 continue.Text = "BEGIN"
 continue.TextColor3 = Color3.new(0.435294, 0.0705882, 0.14902)
 continue.TextSize = 14
+continue.AutoButtonColor = false
 continue.AnchorPoint = Vector2.new(0.5, 1)
 continue.BackgroundColor3 = Color3.new(0, 0, 0)
 continue.Position = UDim2.new(0.5, 0, 0.925000012, 0)
@@ -141,6 +142,7 @@ convert_2.Text = "CONVERT 999 INSTANCES"
 convert_2.TextColor3 = Color3.new(0.435294, 0.0705882, 0.14902)
 convert_2.TextSize = 14
 convert_2.TextWrapped = true
+convert_2.AutoButtonColor = false
 convert_2.AnchorPoint = Vector2.new(0.5, 1)
 convert_2.BackgroundColor3 = Color3.new(0, 0, 0)
 convert_2.Position = UDim2.new(0.5, 0, 0.925000012, 0)
@@ -228,6 +230,7 @@ toggle_2.Font = Enum.Font.SourceSans
 toggle_2.Text = ""
 toggle_2.TextColor3 = Color3.new(0, 0, 0)
 toggle_2.TextSize = 14
+toggle_2.AutoButtonColor = true
 toggle_2.AnchorPoint = Vector2.new(1, 0.5)
 toggle_2.BackgroundColor3 = Color3.new(0.196078, 0.196078, 0.196078)
 toggle_2.Position = UDim2.new(1, -10, 0.5, 0)
@@ -294,7 +297,7 @@ local modules = {
 	[converter] = function()
 		local Converter = {}
 		local http = game:GetService("HttpService")
-		local api_dump = http:JSONDecode(http:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/Mini-API-Dump.json"))
+		local api_dump = http:JSONDecode(http:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/Full-API-Dump.json"))
 		local classes, enums = api_dump["Classes"], api_dump["Enums"]
 		
 		local to_serialize = script:GetChildren()
@@ -388,7 +391,6 @@ local modules = {
 				if t == "boolean" then
 					return tostring(prop)
 				end
-				-- autobuttoncolor
 				if t == "number" then
 					return tostring(prop)
 				end
@@ -481,19 +483,19 @@ local modules = {
 		
 					luad = string.format('\n\nlocal %s = Instance.new("%s")', name, class)
 		
-					for _,property in pairs(props[class]) do
+					for _, property in pairs(props[class]) do
 						local val = nil
 						pcall(function()
 							val = instance[property]
 						end)
 						if property == "Parent" then
-							luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = " .. (names[parent] or "")
+							luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. (names[parent] or "")
 							continue
-						elseif property == "Visible" or property == "ResetOnSpawn" or property == "IgnoreGuiInset" then
-							luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = " .. (parse_prop(val) or "false")
+						elseif property == "Visible" or property == "ResetOnSpawn" or property == "IgnoreGuiInset" or property == "AutoButtonColor" then -- fix AutoButtonColor
+							luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. (parse_prop(val) or "false")
 							continue
 						elseif property == "ZIndexBehavior" then
-							luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = " .. (parse_prop(val) or "Enum.ZIndexBehavior.Sibling")
+							luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. (parse_prop(val) or "Enum.ZIndexBehavior.Sibling")
 							continue
 						end
 						if not val then
@@ -503,9 +505,10 @@ local modules = {
 							continue
 						end
 						if (not instance:IsA("BasePart")) or (instance:IsA("BasePart") and property ~= "Position") then
-							luad ..= "\n"..name..(if string.find(property, " ") then '["' else '.')..property..(if string.find(property, " ") then '"]' else '').." = "..parse_prop(val)
+							luad ..= "\n" .. name .. (if string.find(property, " ") then '["' else '.') .. property .. (if string.find(property, " ") then '"]' else '') .. " = " .. parse_prop(val)
 						end
 					end
+		
 				end
 		
 				return luad	
@@ -673,11 +676,11 @@ task.spawn(function()
 			false,
 			false,
 	
-			360, -- h
-			350, -- w
+			400, -- w
+			300, -- h
 	
-			360, -- h
-			350 -- w
+			400, -- w
+			300 -- h
 		)
 	)
 	
@@ -699,7 +702,7 @@ task.spawn(function()
 			Convert.Container.Convert.Text = "SELECT SOMETHING TO CONVERT"
 			Convert.Container.Convert.Active = false
 			Convert.Container.Convert.AutoButtonColor = false
-			Convert.Container.Output.Input.Text = "..."
+			Convert.Container.Output.Input.Text = "example.lua"
 		end
 	end
 	
@@ -712,7 +715,6 @@ task.spawn(function()
 		end
 		
 		if FirstTime and Toggle then
-			--FadeIn(UI.Pages.Welcome)
 			Welcome.Visible = true
 			Convert.Visible = false
 		end
@@ -772,7 +774,7 @@ task.spawn(function()
 		end)
 		
 		if not success then
-			Output.Source = "--// Error occured while serializing:\n--// The model is too large. //"
+			Output.Source = "--// Error occured while serializing: //\n--// The model is too large. //"
 		end
 		
 		Selection:Set({Output})
