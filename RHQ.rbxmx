@@ -1,7 +1,7 @@
 <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Folder" referent="RBXA0DD7274C8BA43F78757DBC341925FA3">
+	<Item class="Folder" referent="RBXACDC19B9FA6C4FCA8987A23C963D5B96">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -10,7 +10,7 @@
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 		</Properties>
-		<Item class="Script" referent="RBX5227375B25BC4F18821A2EF4B8B6E4C1">
+		<Item class="Script" referent="RBX469BD5CDE8744C9C8EC383600A461898">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -19,7 +19,7 @@
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Main</string>
 				<token name="RunContext">0</token>
-				<string name="ScriptGuid">{D39114A1-B1A0-4227-B893-BEDF8E767D41}</string>
+				<string name="ScriptGuid">{7688168E-CB7C-4AFD-9B01-3408E913C88C}</string>
 				<ProtectedString name="Source"><![CDATA[if game:GetService("RunService"):IsRunning() then
 	return
 end
@@ -159,7 +159,7 @@ end)
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
-			<Item class="Folder" referent="RBX71F4CED1D0204CC0BBBD8DDBCBFC15C5">
+			<Item class="Folder" referent="RBX0DA7A631F2ED48A6951AE7DFB40A5EE0">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -168,14 +168,14 @@ end)
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXAA2300FB12754813B43FBEAB3E10AF7B">
+				<Item class="ModuleScript" referent="RBXDC0F3F7C4EAE4EA7BBB8561F48A3EC34">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<bool name="DefinesCapabilities">false</bool>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Converter</string>
-						<string name="ScriptGuid">{79285D02-6B7F-41DA-935C-622BDB646FF9}</string>
+						<string name="ScriptGuid">{7B9AE118-402D-4566-AA23-3D15125BA167}</string>
 						<ProtectedString name="Source"><![CDATA[local Converter = {}
 local http = game:GetService("HttpService")
 local api_dump = http:JSONDecode(http:GetAsync("https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/Full-API-Dump.json"))
@@ -475,15 +475,19 @@ return Converter
 						<BinaryString name="Tags"></BinaryString>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX82156E3F753E4BDBA3F79219B595F964">
+				<Item class="ModuleScript" referent="RBX5296BEFAE8B643DD8C3BECCDF4D3F1EF">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<bool name="DefinesCapabilities">false</bool>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">Toggle</string>
-						<string name="ScriptGuid">{A0F419D9-B9D1-4943-B592-1CEA93AD055F}</string>
-						<ProtectedString name="Source"><![CDATA[local Toggles = {}
+						<string name="ScriptGuid">{15C55A8E-3500-4919-82CB-A97356FB80F2}</string>
+						<ProtectedString name="Source"><![CDATA[local tweenService = game:GetService("TweenService")
+
+tweenTime = .15
+
+local Toggles = {}
 
 Toggles.new = function(Button: TextButton, default: boolean)
 	local Toggle = {}
@@ -499,22 +503,26 @@ Toggles.new = function(Button: TextButton, default: boolean)
 	Button.MouseButton1Click:Connect(function()
 		Toggle.Value = not Toggle.Value
 		Icon.Visible = Toggle.Value
-		Icon.ImageTransparency = if Toggle.Value then 0 else 1
+		Icon.ImageTransparency = if Toggle.Value then 0 else 1 -- this line here
 		Toggle.OnChange(Toggle.Value)
 	end)
 
 	Button.MouseEnter:Connect(function()
 		if Toggle.Value == false then
+			Icon.ImageTransparency = 1
 			Icon.Visible = true
-			Icon.ImageTransparency = 0.5
+			--wait(tweenTime)
+			tweenService:Create(Icon, TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = .5}):Play()
 		else
+			tweenService:Create(Icon, TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
+			wait(tweenTime)
 			Icon.Visible = false
 		end
 	end)
 
 	Button.MouseLeave:Connect(function()
 		Icon.Visible = Toggle.Value
-		Icon.ImageTransparency = 0
+		tweenService:Create(Icon, TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
 	end)
 
 	return Toggle
@@ -528,7 +536,7 @@ return Toggles
 				</Item>
 			</Item>
 		</Item>
-		<Item class="Frame" referent="RBXBD0D7FD472C6413B9BC0B9E70B2874EA">
+		<Item class="Frame" referent="RBX0ADB34F9A90C46F6B20474BF80F1BBDE">
 			<Properties>
 				<bool name="Active">false</bool>
 				<Vector2 name="AnchorPoint">
@@ -591,7 +599,7 @@ return Toggles
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="Folder" referent="RBX5CBE5A1458A44FC6B7C015A0D9B6EB3E">
+			<Item class="Folder" referent="RBX3399322C8DF546F79D2EC71E70BB2A7F">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -600,7 +608,7 @@ return Toggles
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 				</Properties>
-				<Item class="Frame" referent="RBX48E68486E7D74708801CDBCAC5B6B040">
+				<Item class="Frame" referent="RBXBAD17D830E1B4B1EBB64C361F2174A86">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -663,7 +671,7 @@ return Toggles
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX79FB7F2AA4EA44D7A5C060501508A69C">
+					<Item class="Frame" referent="RBX866E34E727F24490B2ED4E22F9D6ADEE">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -726,7 +734,7 @@ return Toggles
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextLabel" referent="RBXCD9C616E94E445A68EEA10BF5BB36411">
+						<Item class="TextLabel" referent="RBXBC139A11AE2145B9A60AEB11B082BE6B">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -820,7 +828,7 @@ return Toggles
 								<int name="ZIndex">1</int>
 							</Properties>
 						</Item>
-						<Item class="TextButton" referent="RBX2D5906335EC647FAAD9AE23E9B53990D">
+						<Item class="TextButton" referent="RBX9CF327E2BC764196854BEA58CF6E461B">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -917,7 +925,7 @@ return Toggles
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBX08AB818DFA2A403B8222C97EE61974EF">
+							<Item class="UICorner" referent="RBXBB210E197F954762B9981BFF9C84B3ED">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -931,7 +939,7 @@ return Toggles
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="LocalScript" referent="RBXACCB9451D9FC42F6AFAACE5AF58AA135">
+							<Item class="LocalScript" referent="RBX7C13A689821D46549EB4E2E49606295B">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -940,7 +948,7 @@ return Toggles
 									<Content name="LinkedSource"><null></null></Content>
 									<string name="Name">mouse</string>
 									<token name="RunContext">0</token>
-									<string name="ScriptGuid">{0A3275D3-C70B-4857-9DB5-EE484D705D90}</string>
+									<string name="ScriptGuid">{8EC65FB4-1341-46E6-8B93-E3868190D96B}</string>
 									<ProtectedString name="Source"><![CDATA[local t = script.Parent
 local tweenService = game:GetService("TweenService")
 local c1 = Color3.fromRGB(0, 0, 0)
@@ -962,7 +970,7 @@ end)
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="TextLabel" referent="RBX10853100C2224AF780A512C07DC84ED7">
+						<Item class="TextLabel" referent="RBXF4A945003F654D17A58374A24BADD9C4">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1057,7 +1065,7 @@ end)
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX9516B2F1DDC74B0A856EFFDFF2B97A6B">
+				<Item class="Frame" referent="RBX7E054D27E67844198E7E24B8A672F77A">
 					<Properties>
 						<bool name="Active">false</bool>
 						<Vector2 name="AnchorPoint">
@@ -1117,10 +1125,10 @@ end)
 						<int64 name="SourceAssetId">-1</int64>
 						<token name="Style">0</token>
 						<BinaryString name="Tags"></BinaryString>
-						<bool name="Visible">false</bool>
+						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="Frame" referent="RBX7FE3B6C26117419D928E7C7876C724FF">
+					<Item class="Frame" referent="RBXA1C30F7D678E4E439BA088165F91FE7D">
 						<Properties>
 							<bool name="Active">false</bool>
 							<Vector2 name="AnchorPoint">
@@ -1183,7 +1191,7 @@ end)
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="TextButton" referent="RBX0B3D2A29E2CC4714913EF65C025C69B0">
+						<Item class="TextButton" referent="RBX6A0136218CFC4821893148A417BA2BF9">
 							<Properties>
 								<bool name="Active">true</bool>
 								<Vector2 name="AnchorPoint">
@@ -1280,7 +1288,7 @@ end)
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBX2C001FF32BFB4D69AC68472232641C6B">
+							<Item class="UICorner" referent="RBXD6DD7C221BFD4669B3D18B3E85AF14A8">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1294,7 +1302,7 @@ end)
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="UIPadding" referent="RBX5C5C51A449674D20868A464DB510D05C">
+							<Item class="UIPadding" referent="RBXD5DF6354D1654AD7B5BB031ED4469D31">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1320,7 +1328,7 @@ end)
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="LocalScript" referent="RBX90AE19ECF5B8445FBEACD0E0EAB8D403">
+							<Item class="LocalScript" referent="RBXB87D4B1FC5834D63B53A5F79A3E14B28">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1329,7 +1337,7 @@ end)
 									<Content name="LinkedSource"><null></null></Content>
 									<string name="Name">mouse</string>
 									<token name="RunContext">0</token>
-									<string name="ScriptGuid">{B36EBFD0-9B79-44D3-9F3C-C8B314C40498}</string>
+									<string name="ScriptGuid">{7B3F1E62-275D-4768-850D-7ABC4DA4AFC1}</string>
 									<ProtectedString name="Source"><![CDATA[local t = script.Parent
 local tweenService = game:GetService("TweenService")
 local c1 = Color3.fromRGB(0, 0, 0)
@@ -1351,7 +1359,7 @@ end)
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="Frame" referent="RBX135896575ED8423D9DC1F9BE6ED92B1B">
+						<Item class="Frame" referent="RBX6EA0996E23754CC88C470D41297E3D16">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1414,7 +1422,7 @@ end)
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UIStroke" referent="RBXA8919101F59B4D8CAE47009CC4C8BF77">
+							<Item class="UIStroke" referent="RBX2E7A6B9F9C1F4704A12E09C77854B989">
 								<Properties>
 									<token name="ApplyStrokeMode">0</token>
 									<BinaryString name="AttributesSerialize"></BinaryString>
@@ -1434,7 +1442,7 @@ end)
 									<float name="Transparency">0</float>
 								</Properties>
 							</Item>
-							<Item class="TextBox" referent="RBXB7DE8E315952402589B7D0075DAF0C21">
+							<Item class="TextBox" referent="RBXD8C1538F2E1D4A30963BFE2B544F21A5">
 								<Properties>
 									<bool name="Active">true</bool>
 									<Vector2 name="AnchorPoint">
@@ -1537,7 +1545,7 @@ end)
 									<bool name="Visible">true</bool>
 									<int name="ZIndex">1</int>
 								</Properties>
-								<Item class="UICorner" referent="RBXCFC1F693531B4689B89C07B2E0D305AE">
+								<Item class="UICorner" referent="RBXC09B3D54E8604C42B4824B7302D979E1">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1551,7 +1559,7 @@ end)
 										<BinaryString name="Tags"></BinaryString>
 									</Properties>
 								</Item>
-								<Item class="UIPadding" referent="RBXFF82B6BFED2049099A121FA0BF62074D">
+								<Item class="UIPadding" referent="RBX0DFABA9D307A41CB9E31F6BD996738B0">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1578,7 +1586,7 @@ end)
 									</Properties>
 								</Item>
 							</Item>
-							<Item class="UICorner" referent="RBX70747F5B93424816A027C4B954E5DC2F">
+							<Item class="UICorner" referent="RBXB7CEC5F9D5CD4617BAB6B7F2F2B2A597">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1593,7 +1601,7 @@ end)
 								</Properties>
 							</Item>
 						</Item>
-						<Item class="Frame" referent="RBX2E2017C551E345528A97B5E5F3D5975A">
+						<Item class="Frame" referent="RBXEE67F41B0AF244579A6C92552F1F3FE2">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
@@ -1656,7 +1664,7 @@ end)
 								<bool name="Visible">true</bool>
 								<int name="ZIndex">1</int>
 							</Properties>
-							<Item class="UICorner" referent="RBX4ECF13C132BA40EA87BC34CB99B48682">
+							<Item class="UICorner" referent="RBXDE5807B2FFFF40A8A73D19EE0D6FC2F9">
 								<Properties>
 									<BinaryString name="AttributesSerialize"></BinaryString>
 									<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1670,7 +1678,7 @@ end)
 									<BinaryString name="Tags"></BinaryString>
 								</Properties>
 							</Item>
-							<Item class="UIStroke" referent="RBXE88F3E8CD0604AE885334E4789131167">
+							<Item class="UIStroke" referent="RBX204593B133F44BF9B72DDBEA3A0881C0">
 								<Properties>
 									<token name="ApplyStrokeMode">0</token>
 									<BinaryString name="AttributesSerialize"></BinaryString>
@@ -1690,7 +1698,7 @@ end)
 									<float name="Transparency">0</float>
 								</Properties>
 							</Item>
-							<Item class="TextButton" referent="RBX63B6A662A15649988AF7947A1599B9C2">
+							<Item class="TextButton" referent="RBX322544F8578547D6B4D063148F44B763">
 								<Properties>
 									<bool name="Active">true</bool>
 									<Vector2 name="AnchorPoint">
@@ -1698,7 +1706,7 @@ end)
 										<Y>0.5</Y>
 									</Vector2>
 									<BinaryString name="AttributesSerialize"></BinaryString>
-									<bool name="AutoButtonColor">true</bool>
+									<bool name="AutoButtonColor">false</bool>
 									<bool name="AutoLocalize">true</bool>
 									<token name="AutomaticSize">0</token>
 									<Color3 name="BackgroundColor3">
@@ -1787,7 +1795,7 @@ end)
 									<bool name="Visible">true</bool>
 									<int name="ZIndex">1</int>
 								</Properties>
-								<Item class="UICorner" referent="RBX7BBAF776B4B1433C8CD91988A927CDDB">
+								<Item class="UICorner" referent="RBXB42B6F8FAB564C209BE3941969E670C8">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -1801,7 +1809,7 @@ end)
 										<BinaryString name="Tags"></BinaryString>
 									</Properties>
 								</Item>
-								<Item class="ImageLabel" referent="RBX577CAA276C824A209EA0E26C593F33E5">
+								<Item class="ImageLabel" referent="RBX47D6CA6B43DB4D229F1A6064EC6A44F1">
 									<Properties>
 										<bool name="Active">false</bool>
 										<Vector2 name="AnchorPoint">
@@ -1828,7 +1836,7 @@ end)
 										<bool name="ClipsDescendants">false</bool>
 										<bool name="DefinesCapabilities">false</bool>
 										<bool name="Draggable">false</bool>
-										<Content name="Image"><url>http://www.roblox.com/asset/?id=6031094667</url></Content>
+										<Content name="Image"><url>rbxassetid://16313562668</url></Content>
 										<Color3 name="ImageColor3">
 											<R>0.784313738</R>
 											<G>0.784313738</G>
@@ -1859,7 +1867,7 @@ end)
 										<token name="ResampleMode">0</token>
 										<Ref name="RootLocalizationTable">null</Ref>
 										<float name="Rotation">0</float>
-										<token name="ScaleType">0</token>
+										<token name="ScaleType">3</token>
 										<bool name="Selectable">false</bool>
 										<token name="SelectionBehaviorDown">0</token>
 										<token name="SelectionBehaviorLeft">0</token>
@@ -1898,8 +1906,34 @@ end)
 										<int name="ZIndex">1</int>
 									</Properties>
 								</Item>
+								<Item class="UIPadding" referent="RBXF0A750E86B6642228358E4830CDE1F43">
+									<Properties>
+										<BinaryString name="AttributesSerialize"></BinaryString>
+										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+										<bool name="DefinesCapabilities">false</bool>
+										<string name="Name">UIPadding</string>
+										<UDim name="PaddingBottom">
+											<S>0</S>
+											<O>0</O>
+										</UDim>
+										<UDim name="PaddingLeft">
+											<S>0</S>
+											<O>3</O>
+										</UDim>
+										<UDim name="PaddingRight">
+											<S>0</S>
+											<O>2</O>
+										</UDim>
+										<UDim name="PaddingTop">
+											<S>0</S>
+											<O>3</O>
+										</UDim>
+										<int64 name="SourceAssetId">-1</int64>
+										<BinaryString name="Tags"></BinaryString>
+									</Properties>
+								</Item>
 							</Item>
-							<Item class="TextLabel" referent="RBX5B1F2ABD51084F4F833A9559EB7D0873">
+							<Item class="TextLabel" referent="RBX6E77ACC8E67648659DC61AC1D20EF145">
 								<Properties>
 									<bool name="Active">false</bool>
 									<Vector2 name="AnchorPoint">
@@ -1991,7 +2025,7 @@ end)
 									<bool name="Visible">true</bool>
 									<int name="ZIndex">1</int>
 								</Properties>
-								<Item class="UIPadding" referent="RBXE0507555363640B9B275CC9F48AD016D">
+								<Item class="UIPadding" referent="RBXC3C663CA89F64B49B347725B5843A34A">
 									<Properties>
 										<BinaryString name="AttributesSerialize"></BinaryString>
 										<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
@@ -2019,7 +2053,7 @@ end)
 								</Item>
 							</Item>
 						</Item>
-						<Item class="TextLabel" referent="RBX625733E438214434A964E07D3E566117">
+						<Item class="TextLabel" referent="RBX451692680B9B4F9A99DF4BB40593D4B6">
 							<Properties>
 								<bool name="Active">false</bool>
 								<Vector2 name="AnchorPoint">
