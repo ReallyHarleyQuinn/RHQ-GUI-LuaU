@@ -1,6 +1,6 @@
 # RHQ Lua Code Generator
 
-This Lua code generator was created with the help of @ReallyHarleyQuinn's GUI to LuaU magic. You know how we do it.
+This Lua code generator was created with the help of [@ReallyHarleyQuinn](https://github.com/ReallyHarleyQuinn)'s GUI to LuaU magic. You know how we do it.
 
 ## Usage
 
