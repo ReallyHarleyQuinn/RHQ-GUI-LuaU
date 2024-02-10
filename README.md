@@ -12,7 +12,7 @@ This Lua code generator was created with the help of [@ReallyHarleyQuinn](https:
 6. The rest is pretty self-explanatory! enjoy!
 
 ## Pictures
-![image](https://github.com/ReallyHarleyQuinn/RHQ-GUI-LuaU/assets/151795744/5b8d74fc-2d3a-4ffd-93cd-158c08261be8)
+![image](https://github.com/ReallyHarleyQuinn/RHQ-GUI-LuaU/assets/151795744/dd33b63a-f19a-4708-b98f-8b20cd249b7b)
 
 ## Contact
 
