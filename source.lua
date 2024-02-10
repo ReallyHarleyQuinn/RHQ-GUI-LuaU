@@ -122,7 +122,7 @@ convert.BackgroundColor3 = Color3.new(1, 1, 1)
 convert.BackgroundTransparency = 1
 convert.BorderSizePixel = 0
 convert.Size = UDim2.new(1, 0, 1, 0)
-convert.Visible = false
+convert.Visible = true
 convert.Name = "Convert"
 convert.Parent = pages
 
@@ -230,7 +230,7 @@ toggle_2.Font = Enum.Font.SourceSans
 toggle_2.Text = ""
 toggle_2.TextColor3 = Color3.new(0, 0, 0)
 toggle_2.TextSize = 14
-toggle_2.AutoButtonColor = true
+toggle_2.AutoButtonColor = false
 toggle_2.AnchorPoint = Vector2.new(1, 0.5)
 toggle_2.BackgroundColor3 = Color3.new(0.196078, 0.196078, 0.196078)
 toggle_2.Position = UDim2.new(1, -10, 0.5, 0)
@@ -244,8 +244,9 @@ uicorner_6.CornerRadius = UDim.new(0, 4)
 uicorner_6.Parent = toggle_2
 
 local icon = Instance.new("ImageLabel")
-icon.Image = "http://www.roblox.com/asset/?id=6031094667"
+icon.Image = "rbxassetid://16313562668"
 icon.ImageColor3 = Color3.new(0.784314, 0.784314, 0.784314)
+icon.ScaleType = Enum.ScaleType.Fit
 icon.AnchorPoint = Vector2.new(0.5, 0.5)
 icon.BackgroundColor3 = Color3.new(1, 1, 1)
 icon.BackgroundTransparency = 1
@@ -255,6 +256,12 @@ icon.Size = UDim2.new(0.899999976, 0, 0.899999976, 0)
 icon.Visible = true
 icon.Name = "Icon"
 icon.Parent = toggle_2
+
+local uipadding_3 = Instance.new("UIPadding")
+uipadding_3.PaddingLeft = UDim.new(0, 3)
+uipadding_3.PaddingRight = UDim.new(0, 2)
+uipadding_3.PaddingTop = UDim.new(0, 3)
+uipadding_3.Parent = toggle_2
 
 local title_2 = Instance.new("TextLabel")
 title_2.Font = Enum.Font.Gotham
@@ -270,9 +277,9 @@ title_2.Visible = true
 title_2.Name = "Title"
 title_2.Parent = convert_scripts
 
-local uipadding_3 = Instance.new("UIPadding")
-uipadding_3.PaddingLeft = UDim.new(0, 10)
-uipadding_3.Parent = title_2
+local uipadding_4 = Instance.new("UIPadding")
+uipadding_4.PaddingLeft = UDim.new(0, 10)
+uipadding_4.Parent = title_2
 
 local title_3 = Instance.new("TextLabel")
 title_3.Font = Enum.Font.GothamBlack
@@ -591,6 +598,10 @@ local modules = {
 		return Converter
 		
 	end[toggle] = function()
+		local tweenService = game:GetService("TweenService")
+		
+		tweenTime = .15
+		
 		local Toggles = {}
 		
 		Toggles.new = function(Button: TextButton, default: boolean)
@@ -607,22 +618,26 @@ local modules = {
 			Button.MouseButton1Click:Connect(function()
 				Toggle.Value = not Toggle.Value
 				Icon.Visible = Toggle.Value
-				Icon.ImageTransparency = if Toggle.Value then 0 else 1
+				Icon.ImageTransparency = if Toggle.Value then 0 else 1 -- this line here
 				Toggle.OnChange(Toggle.Value)
 			end)
 		
 			Button.MouseEnter:Connect(function()
 				if Toggle.Value == false then
+					Icon.ImageTransparency = 1
 					Icon.Visible = true
-					Icon.ImageTransparency = 0.5
+					--wait(tweenTime)
+					tweenService:Create(Icon, TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = .5}):Play()
 				else
+					tweenService:Create(Icon, TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 1}):Play()
+					wait(tweenTime)
 					Icon.Visible = false
 				end
 			end)
 		
 			Button.MouseLeave:Connect(function()
 				Icon.Visible = Toggle.Value
-				Icon.ImageTransparency = 0
+				tweenService:Create(Icon, TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
 			end)
 		
 			return Toggle
