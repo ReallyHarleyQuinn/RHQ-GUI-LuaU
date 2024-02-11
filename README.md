@@ -17,7 +17,7 @@ This Lua code generator was created with the help of [@ReallyHarleyQuinn](https:
 ## Contact
 
 - **@ReallyHarleyQuinn**
-  - Discord: @ReallyHarleyQuinn
+  - Discord: @reallyharleyquinn
   - GitHub: [@ReallyHarleyQuinn](https://github.com/ReallyHarleyQuinn)
 
 Feel free to reach out on Discord or GitHub for any questions or support.
